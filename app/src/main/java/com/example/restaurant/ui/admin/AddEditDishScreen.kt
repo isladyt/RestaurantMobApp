@@ -26,11 +26,11 @@ fun AddEditDishScreen(
     Column(modifier = Modifier
         .fillMaxSize()
         .padding(16.dp)) {
-        OutlinedTextField(value = dishName, onValueChange = { viewModel.onNameChange(it) }, label = { Text("Name") })
-        OutlinedTextField(value = dishDescription, onValueChange = { viewModel.onDescriptionChange(it) }, label = { Text("Description") })
-        OutlinedTextField(value = dishIngredients, onValueChange = { viewModel.onIngredientsChange(it) }, label = { Text("Ingredients") })
-        OutlinedTextField(value = dishPrice, onValueChange = { viewModel.onPriceChange(it) }, label = { Text("Price") })
-        OutlinedTextField(value = dishImageUri ?: "", onValueChange = { viewModel.onImageUriChange(it) }, label = { Text("Image URL") })
+        OutlinedTextField(value = dishName, onValueChange = { viewModel.onNameChange(it) }, label = { Text("Наименование") })
+        OutlinedTextField(value = dishDescription, onValueChange = { viewModel.onDescriptionChange(it) }, label = { Text("Описание") })
+        OutlinedTextField(value = dishIngredients, onValueChange = { viewModel.onIngredientsChange(it) }, label = { Text("Ингридиенты") })
+        OutlinedTextField(value = dishPrice, onValueChange = { viewModel.onPriceChange(it) }, label = { Text("Цена") })
+        OutlinedTextField(value = dishImageUri ?: "", onValueChange = { viewModel.onImageUriChange(it) }, label = { Text("Фотография блюда") })
         
         // TODO: Add a dropdown for categories
 
@@ -38,7 +38,7 @@ fun AddEditDishScreen(
             viewModel.saveDish()
             onDishSaved()
         }) {
-            Text("Save")
+            Text("Сохранить")
         }
     }
 }
