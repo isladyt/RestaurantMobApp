@@ -1,35 +1,58 @@
 package com.example.restaurant.ui.admin
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.restaurant.data.entity.Order
 import com.example.restaurant.repository.ReportRepository
+import com.example.restaurant.util.ExcelExporter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class ReportViewModel @Inject constructor(private val reportRepository: ReportRepository) : ViewModel() {
 
+    // Начальное состояние теперь Idle
     private val _reportState = MutableStateFlow<ReportState>(ReportState.Idle)
     val reportState: StateFlow<ReportState> = _reportState
+
+    private var currentOrders: List<Order> = emptyList()
+
+    // generateReport() больше не вызывается в init
 
     fun generateReport() {
         viewModelScope.launch {
             _reportState.value = ReportState.Loading
-            val result = reportRepository.generateReport()
-            _reportState.value = result.fold(
-                onSuccess = { ReportState.Success(it) },
-                onFailure = { ReportState.Error(it.message ?: "Unknown error") }
-            )
+            try {
+                currentOrders = reportRepository.getTodaysOrders()
+                val totalRevenue = currentOrders.sumOf { it.total_amount }
+                val orderCount = currentOrders.size
+                _reportState.value = ReportState.Success(orderCount, totalRevenue)
+            } catch (e: Exception) {
+                _reportState.value = ReportState.Error(e.message ?: "Ошибка при генерации отчета")
+            }
+        }
+    }
+
+    fun exportReport(context: Context) {
+        if (currentOrders.isNotEmpty()) {
+            val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val fileName = "Отчет_по_заказам_$timestamp.xlsx"
+            ExcelExporter.exportOrdersToExcel(context, currentOrders, fileName)
         }
     }
 }
 
+// Добавляем состояние Idle
 sealed class ReportState {
     object Idle : ReportState()
     object Loading : ReportState()
-    data class Success(val filePath: String) : ReportState()
+    data class Success(val orderCount: Int, val totalRevenue: Double) : ReportState()
     data class Error(val message: String) : ReportState()
 }

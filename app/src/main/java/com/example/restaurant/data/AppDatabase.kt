@@ -15,7 +15,7 @@ import com.example.restaurant.data.entity.User
 
 @Database(
     entities = [User::class, Category::class, Dish::class, Order::class, OrderItem::class],
-    version = 12, // Финальная версия
+    version = 15, // Финальная версия
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

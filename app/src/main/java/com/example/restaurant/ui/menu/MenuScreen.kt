@@ -3,6 +3,7 @@ package com.example.restaurant.ui.menu
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -12,7 +13,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
@@ -28,9 +31,8 @@ fun MenuScreen(
     val selectedCategoryId by viewModel.selectedCategoryId.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // Заголовок экрана
         Text(
-            text = "Меню",
+            text = "Ресторан Меню",
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(16.dp)
         )
@@ -56,35 +58,43 @@ fun MenuScreen(
 @Composable
 fun DishItem(
     dish: Dish, 
-    onAddToCart: (Dish) -> Unit,
-    onSetFavorite: (Int, Boolean) -> Unit
+    onAddToCart: ((Dish) -> Unit)? = null,
+    onSetFavorite: ((Int, Boolean) -> Unit)?,
+    modifier: Modifier = Modifier // Добавляем modifier
 ) {
-    Card(modifier = Modifier
+    Card(modifier = modifier
         .fillMaxWidth()
         .padding(8.dp)) {
-        Row(modifier = Modifier.padding(8.dp)) {
+        Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             AsyncImage(
-                model = dish.image_uri,
-                contentDescription = null,
-                modifier = Modifier.size(100.dp)
+                model = dish.image_res_id,
+                contentDescription = dish.name,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
             )
             Column(modifier = Modifier
                 .weight(1f)
-                .padding(start = 8.dp)) {
+                .padding(start = 16.dp)) {
                 Text(dish.name, style = MaterialTheme.typography.titleMedium)
                 Text(dish.description, style = MaterialTheme.typography.bodySmall)
                 Text("Цена: ${dish.price} руб.", style = MaterialTheme.typography.bodyMedium)
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Button(onClick = { onAddToCart(dish) }) {
-                        Text("В корзину")
+                    if (onAddToCart != null) {
+                        Button(onClick = { onAddToCart(dish) }) {
+                            Text("В корзину")
+                        }
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    IconButton(onClick = { onSetFavorite(dish.id, !dish.is_favorite) }) {
-                        Icon(
-                            imageVector = if (dish.is_favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                            contentDescription = "В избранное",
-                            tint = if (dish.is_favorite) Color.Red else Color.Gray
-                        )
+                    if (onSetFavorite != null) {
+                        IconButton(onClick = { onSetFavorite(dish.id, !dish.is_favorite) }) {
+                            Icon(
+                                imageVector = if (dish.is_favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                contentDescription = "В избранное",
+                                tint = if (dish.is_favorite) Color.Red else Color.Gray
+                            )
+                        }
                     }
                 }
             }

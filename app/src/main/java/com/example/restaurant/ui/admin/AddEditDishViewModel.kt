@@ -3,13 +3,13 @@ package com.example.restaurant.ui.admin
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.restaurant.R
 import com.example.restaurant.data.entity.Category
 import com.example.restaurant.data.entity.Dish
 import com.example.restaurant.repository.MenuAdminRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -21,54 +21,58 @@ class AddEditDishViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private val _dish = MutableStateFlow<Dish?>(null)
+    val dish: StateFlow<Dish?> = _dish
+
     private val _categories = MutableStateFlow<List<Category>>(emptyList())
-    val categories: StateFlow<List<Category>> = _categories.asStateFlow()
+    val categories: StateFlow<List<Category>> = _categories
 
-    private val _dishName = MutableStateFlow("")
-    val dishName: StateFlow<String> = _dishName.asStateFlow()
-
-    private val _dishDescription = MutableStateFlow("")
-    val dishDescription: StateFlow<String> = _dishDescription.asStateFlow()
-
-    private val _dishIngredients = MutableStateFlow("")
-    val dishIngredients: StateFlow<String> = _dishIngredients.asStateFlow()
-
-    private val _dishPrice = MutableStateFlow("")
-    val dishPrice: StateFlow<String> = _dishPrice.asStateFlow()
-
-    private val _dishCategoryId = MutableStateFlow<Int?>(null)
-    val dishCategoryId: StateFlow<Int?> = _dishCategoryId.asStateFlow()
-
-    private val _dishImageUri = MutableStateFlow<String?>("")
-    val dishImageUri: StateFlow<String?> = _dishImageUri.asStateFlow()
+    private val dishId: Int = savedStateHandle.get<Int>("dishId") ?: -1
 
     init {
-        menuAdminRepository.getAllCategories().onEach { 
-            _categories.value = it
-            if (_dishCategoryId.value == null && it.isNotEmpty()) {
-                _dishCategoryId.value = it.first().id
+        if (dishId != -1) {
+            viewModelScope.launch {
+                _dish.value = menuAdminRepository.getDish(dishId)
             }
-        }.launchIn(viewModelScope)
+        }
+        menuAdminRepository.getAllCategories()
+            .onEach { _categories.value = it }
+            .launchIn(viewModelScope)
     }
 
-    fun onNameChange(name: String) { _dishName.value = name }
-    fun onDescriptionChange(description: String) { _dishDescription.value = description }
-    fun onIngredientsChange(ingredients: String) { _dishIngredients.value = ingredients }
-    fun onPriceChange(price: String) { _dishPrice.value = price }
-    fun onImageUriChange(uri: String) { _dishImageUri.value = uri }
+    fun saveDish(name: String, description: String, ingredients: String, price: String, categoryId: Int) {
+        val priceDouble = price.toDoubleOrNull() ?: 0.0
+        
+        // Простая логика для присвоения ID картинки (можно улучшить)
+        val imageResId = when {
+            name.contains("Маргарита", ignoreCase = true) -> R.drawable.margarita
+            name.contains("Пепперони", ignoreCase = true) -> R.drawable.pepperoni
+            // ... добавьте остальные
+            else -> null
+        }
 
-    fun saveDish() {
+        val dishToSave = dish.value?.copy(
+            name = name,
+            description = description,
+            ingredients = ingredients,
+            price = priceDouble,
+            category_id = categoryId,
+            image_res_id = imageResId
+        ) ?: Dish(
+            name = name,
+            description = description,
+            ingredients = ingredients,
+            price = priceDouble,
+            category_id = categoryId,
+            image_res_id = imageResId
+        )
+
         viewModelScope.launch {
-            val dish = Dish(
-                id = savedStateHandle.get<Int>("dishId") ?: 0,
-                name = _dishName.value,
-                description = _dishDescription.value,
-                ingredients = _dishIngredients.value,
-                price = _dishPrice.value.toDoubleOrNull() ?: 0.0,
-                category_id = _dishCategoryId.value ?: 0,
-                image_uri = _dishImageUri.value
-            )
-            menuAdminRepository.insertDish(dish)
+            if (dishToSave.id == 0) {
+                menuAdminRepository.addDish(dishToSave)
+            } else {
+                menuAdminRepository.updateDish(dishToSave)
+            }
         }
     }
 }

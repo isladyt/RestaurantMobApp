@@ -11,6 +11,6 @@ data class Dish(
     val ingredients: String,
     val price: Double,
     val category_id: Int,
-    val image_uri: String?,
-    var is_favorite: Boolean = false // Новое поле для избранного
+    val image_res_id: Int? = null, // Поле для ID ресурса
+    var is_favorite: Boolean = false
 )

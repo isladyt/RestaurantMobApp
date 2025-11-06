@@ -19,6 +19,9 @@ interface DishDao {
     @Query("SELECT * FROM dishes WHERE is_favorite = 1")
     fun getFavoriteDishes(): Flow<List<Dish>>
 
+    @Query("SELECT * FROM dishes WHERE id = :dishId")
+    suspend fun getDishById(dishId: Int): Dish?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDish(dish: Dish)
 

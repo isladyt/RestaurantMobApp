@@ -48,7 +48,6 @@ fun RegisterScreen(
             value = name,
             onValueChange = { name = it },
             label = { Text("Имя") },
-            // Указываем тип клавиатуры для имени
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             modifier = Modifier.fillMaxWidth()
         )

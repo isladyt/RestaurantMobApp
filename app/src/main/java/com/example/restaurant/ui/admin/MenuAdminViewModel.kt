@@ -5,24 +5,17 @@ import androidx.lifecycle.viewModelScope
 import com.example.restaurant.data.entity.Dish
 import com.example.restaurant.repository.MenuAdminRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MenuAdminViewModel @Inject constructor(private val menuAdminRepository: MenuAdminRepository) : ViewModel() {
 
-    private val _dishes = MutableStateFlow<List<Dish>>(emptyList())
-    val dishes: StateFlow<List<Dish>> = _dishes
-
-    init {
-        menuAdminRepository.getAllDishes()
-            .onEach { _dishes.value = it }
-            .launchIn(viewModelScope)
-    }
+    val dishes: StateFlow<List<Dish>> = menuAdminRepository.getAllDishes()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun deleteDish(dish: Dish) {
         viewModelScope.launch {

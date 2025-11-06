@@ -7,9 +7,8 @@ import androidx.room.PrimaryKey
 data class User(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val login: String,
-    val password_hash: String,
+    val password: String, // Больше не хеш
     val name: String,
-    // Новые поля для профиля
     val email: String? = null,
     val phone: String? = null,
     val created_at: Long = System.currentTimeMillis(),
