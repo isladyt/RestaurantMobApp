@@ -73,7 +73,7 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                     Text("Отчет за сегодня", style = MaterialTheme.typography.headlineMedium)
                     Spacer(modifier = Modifier.height(16.dp))
                     Text("Количество заказов: ${state.orderCount}", style = MaterialTheme.typography.bodyLarge)
-                    Text("Общая выручка: ${state.totalRevenue} руб.", style = MaterialTheme.typography.bodyLarge)
+                    Text("Общая выручка: ${state.totalRevenue} ₽", style = MaterialTheme.typography.bodyLarge)
                     Spacer(modifier = Modifier.height(24.dp))
                     Row {
                         Button(onClick = { viewModel.generateReport() }) {

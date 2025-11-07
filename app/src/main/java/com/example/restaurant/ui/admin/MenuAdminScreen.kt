@@ -37,7 +37,6 @@ fun MenuAdminScreen(
         LazyColumn(modifier = Modifier.padding(padding)) {
             items(dishes) { dish ->
                 Row(modifier = Modifier.clickable { onEditDish(dish.id) }) {
-                    // Применяем weight к DishItem напрямую
                     DishItem(
                         dish = dish, 
                         onAddToCart = null, 

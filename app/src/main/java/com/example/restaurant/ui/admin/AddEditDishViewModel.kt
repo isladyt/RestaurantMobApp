@@ -42,12 +42,10 @@ class AddEditDishViewModel @Inject constructor(
 
     fun saveDish(name: String, description: String, ingredients: String, price: String, categoryId: Int) {
         val priceDouble = price.toDoubleOrNull() ?: 0.0
-        
-        // Простая логика для присвоения ID картинки (можно улучшить)
+
         val imageResId = when {
             name.contains("Маргарита", ignoreCase = true) -> R.drawable.margarita
             name.contains("Пепперони", ignoreCase = true) -> R.drawable.pepperoni
-            // ... добавьте остальные
             else -> null
         }
 

@@ -8,7 +8,6 @@ import androidx.navigation.compose.rememberNavController
 const val LOGIN_ROUTE = "login"
 const val REGISTER_ROUTE = "register"
 
-// Возвращаемся к простой лямбде
 @Composable
 fun AuthNavigation(onLoginSuccess: (Int, String, Boolean) -> Unit) {
     val navController = rememberNavController()

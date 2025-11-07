@@ -79,7 +79,7 @@ fun DishItem(
                 .padding(start = 16.dp)) {
                 Text(dish.name, style = MaterialTheme.typography.titleMedium)
                 Text(dish.description, style = MaterialTheme.typography.bodySmall)
-                Text("Цена: ${dish.price} руб.", style = MaterialTheme.typography.bodyMedium)
+                Text("Цена: ${dish.price} ₽", style = MaterialTheme.typography.bodyMedium)
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (onAddToCart != null) {
                         Button(onClick = { onAddToCart(dish) }) {

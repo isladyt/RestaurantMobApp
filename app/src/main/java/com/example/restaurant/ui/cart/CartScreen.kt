@@ -53,7 +53,7 @@ fun CartScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.End
         ) {
-            Text(text = "Итого: $totalPrice руб.", style = MaterialTheme.typography.headlineSmall)
+            Text(text = "Итого: $totalPrice ₽", style = MaterialTheme.typography.headlineSmall)
             Button(onClick = onCheckout, enabled = cartItems.isNotEmpty()) {
                 Text("Оформить заказ")
             }
@@ -94,7 +94,7 @@ fun CartItemRow(
                 Icon(Icons.Default.Add, contentDescription = "Увеличить")
             }
         }
-        Text("${item.dish.price * item.quantity} руб.", modifier = Modifier.width(80.dp))
+        Text("${item.dish.price * item.quantity} ₽", modifier = Modifier.width(80.dp))
 
         // Добавляем кнопку удаления
         IconButton(onClick = { onRemove(item.dish.id) }) {

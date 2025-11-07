@@ -35,7 +35,7 @@ fun AdminOrderItem(order: Order, onStatusChange: (String) -> Unit) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Заказ #${order.id}", style = MaterialTheme.typography.titleMedium)
             Text("ID пользователя: ${order.user_id}")
-            Text("Итого: ${order.total_amount} руб.")
+            Text("Итого: ${order.total_amount} ₽")
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Статус: ${order.status_order}")
                 Box {
