@@ -60,7 +60,7 @@ fun MainNavigation(
             route = PROFILE_ROUTE,
             arguments = listOf(navArgument("userLogin") { type = NavType.StringType })
         ) {
-            ProfileScreen(onUserDeleted = onUserDeleted)
+            ProfileScreen(onUserDeleted = onUserDeleted, onLogout = { mainViewModel.onLogout() })
         }
         composable(FAVORITES_ROUTE) {
             FavoritesScreen(onAddToCart = { mainViewModel.onAddToCart(it) })

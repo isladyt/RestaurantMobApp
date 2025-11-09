@@ -3,6 +3,8 @@ package com.example.restaurant.ui.profile
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,15 +17,35 @@ import androidx.hilt.navigation.compose.hiltViewModel
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-    onUserDeleted: () -> Unit
+    onUserDeleted: () -> Unit,
+    onLogout: () -> Unit
 ) {
     val user by viewModel.user.collectAsState()
     val updateState by viewModel.updateState.collectAsState()
     val context = LocalContext.current
+    var showLogoutDialog by remember { mutableStateOf(false) }
 
     var name by remember(user) { mutableStateOf(user?.name ?: "") }
     var email by remember(user) { mutableStateOf(user?.email ?: "") }
     var phone by remember(user) { mutableStateOf(user?.phone ?: "") }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Подтверждение выхода") },
+            text = { Text("Вы уверены, что хотите выйти?") },
+            confirmButton = {
+                Button(onClick = onLogout) {
+                    Text("Да")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showLogoutDialog = false }) {
+                    Text("Нет")
+                }
+            }
+        )
+    }
 
     LaunchedEffect(updateState) {
         when (val state = updateState) {
@@ -81,6 +103,11 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedButton(onClick = { viewModel.deleteUser() }) {
             Text("Удалить профиль")
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        TextButton(onClick = { showLogoutDialog = true }) {
+            Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Выйти", modifier = Modifier.padding(end = 8.dp))
+            Text("Выйти из аккаунта")
         }
     }
 }

@@ -46,7 +46,7 @@ fun AppNavigation(mainViewModel: MainViewModel = hiltViewModel()) {
         }
         is ScreenState.Main -> {
             if (state.user.is_admin) {
-                AdminNavigation()
+                AdminNavigation(onLogout = { mainViewModel.onLogout() }) // Передаем onLogout
             } else {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()

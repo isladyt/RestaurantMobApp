@@ -3,11 +3,11 @@ package com.example.restaurant.ui.admin
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -25,10 +25,29 @@ const val ADD_EDIT_DISH_ROUTE = "add_edit_dish"
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AdminNavigation() {
+fun AdminNavigation(onLogout: () -> Unit) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            title = { Text("Подтверждение выхода") },
+            text = { Text("Вы уверены, что хотите выйти?") },
+            confirmButton = {
+                Button(onClick = onLogout) {
+                    Text("Да")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showLogoutDialog = false }) {
+                    Text("Нет")
+                }
+            }
+        )
+    }
 
     Scaffold(
         bottomBar = {
@@ -50,6 +69,12 @@ fun AdminNavigation() {
                     label = { Text("Отчеты") },
                     selected = currentRoute == ADMIN_REPORTS_ROUTE,
                     onClick = { navController.navigate(ADMIN_REPORTS_ROUTE) }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Выйти") },
+                    label = { Text("Выйти") },
+                    selected = false,
+                    onClick = { showLogoutDialog = true } // Показываем диалог
                 )
             }
         }
