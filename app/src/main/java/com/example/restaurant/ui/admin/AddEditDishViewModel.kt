@@ -41,7 +41,7 @@ class AddEditDishViewModel @Inject constructor(
     }
 
     fun saveDish(name: String, description: String, ingredients: String, price: String, categoryId: Int) {
-        val priceDouble = price.toDoubleOrNull() ?: 0.0
+        val priceInt = price.toIntOrNull() ?: 0
 
         val imageResId = when {
             name.contains("Маргарита", ignoreCase = true) -> R.drawable.margarita
@@ -53,14 +53,14 @@ class AddEditDishViewModel @Inject constructor(
             name = name,
             description = description,
             ingredients = ingredients,
-            price = priceDouble,
+            price = priceInt,
             category_id = categoryId,
             image_res_id = imageResId
         ) ?: Dish(
             name = name,
             description = description,
             ingredients = ingredients,
-            price = priceDouble,
+            price = priceInt,
             category_id = categoryId,
             image_res_id = imageResId
         )

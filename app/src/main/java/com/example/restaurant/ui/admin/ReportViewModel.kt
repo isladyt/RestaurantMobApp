@@ -18,13 +18,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ReportViewModel @Inject constructor(private val reportRepository: ReportRepository) : ViewModel() {
 
-    // Начальное состояние теперь Idle
     private val _reportState = MutableStateFlow<ReportState>(ReportState.Idle)
     val reportState: StateFlow<ReportState> = _reportState
 
     private var currentOrders: List<Order> = emptyList()
-
-    // generateReport() больше не вызывается в init
 
     fun generateReport() {
         viewModelScope.launch {
@@ -49,10 +46,9 @@ class ReportViewModel @Inject constructor(private val reportRepository: ReportRe
     }
 }
 
-// Добавляем состояние Idle
 sealed class ReportState {
     object Idle : ReportState()
     object Loading : ReportState()
-    data class Success(val orderCount: Int, val totalRevenue: Double) : ReportState()
+    data class Success(val orderCount: Int, val totalRevenue: Int) : ReportState()
     data class Error(val message: String) : ReportState()
 }

@@ -8,11 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.restaurant.data.entity.User
 
 @Composable
 fun LoginScreen(
     viewModel: AuthViewModel = hiltViewModel(),
-    onLoginSuccess: (Int, String, Boolean) -> Unit,
+    onLoginSuccess: (User) -> Unit,
     onNavigateToRegister: () -> Unit
 ) {
     val loginState by viewModel.loginState.collectAsState()
@@ -27,7 +28,6 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // ДОБАВЛЯЕМ ЗАГОЛОВОК
         Text("Авторизация", style = MaterialTheme.typography.headlineMedium)
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -54,7 +54,7 @@ fun LoginScreen(
             when (val state = loginState) {
                 is LoginState.Success -> {
                     LaunchedEffect(state) {
-                        onLoginSuccess(state.user.id, state.user.login, state.user.is_admin)
+                        onLoginSuccess(state.user)
                     }
                 }
                 is LoginState.Error -> {

@@ -8,10 +8,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,6 +23,25 @@ fun MenuAdminScreen(
     onEditDish: (Int) -> Unit
 ) {
     val dishes by viewModel.dishes.collectAsState()
+    val dishToDelete by viewModel.dishToDelete.collectAsState()
+
+    if (dishToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { viewModel.onDismissDelete() },
+            title = { Text("Подтверждение удаления") },
+            text = { Text("Вы уверены, что хотите удалить блюдо '${dishToDelete!!.name}'?") },
+            confirmButton = {
+                Button(onClick = { viewModel.onConfirmDelete() }) {
+                    Text("Удалить")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { viewModel.onDismissDelete() }) {
+                    Text("Отмена")
+                }
+            }
+        )
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -43,7 +59,7 @@ fun MenuAdminScreen(
                         onSetFavorite = null,
                         modifier = Modifier.weight(1f)
                     )
-                    IconButton(onClick = { viewModel.deleteDish(dish) }) {
+                    IconButton(onClick = { viewModel.onDeleteDishClick(dish) }) {
                         Icon(Icons.Default.Delete, contentDescription = "Удалить")
                     }
                 }

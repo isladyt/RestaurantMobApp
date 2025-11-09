@@ -55,7 +55,7 @@ class CartRepository @Inject constructor() {
         }
     }
 
-    fun getTotalPrice(): Flow<Double> = getCart().map { cart ->
+    fun getTotalPrice(): Flow<Int> = getCart().map { cart ->
         cart.sumOf { it.dish.price * it.quantity }
     }
 

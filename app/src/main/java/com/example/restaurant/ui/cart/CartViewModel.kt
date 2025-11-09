@@ -16,8 +16,8 @@ class CartViewModel @Inject constructor(private val cartRepository: CartReposito
     val cartItems: StateFlow<List<CartItem>> = cartRepository.getCart()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    val totalPrice: StateFlow<Double> = cartRepository.getTotalPrice()
-        .stateIn(viewModelScope, SharingStarted.Lazily, 0.0)
+    val totalPrice: StateFlow<Int> = cartRepository.getTotalPrice()
+        .stateIn(viewModelScope, SharingStarted.Lazily, 0)
 
     fun removeFromCart(dishId: Int) {
         cartRepository.removeFromCart(dishId)

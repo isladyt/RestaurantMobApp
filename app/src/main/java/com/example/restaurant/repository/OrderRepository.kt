@@ -4,6 +4,8 @@ import com.example.restaurant.data.dao.OrderDao
 import com.example.restaurant.data.dao.OrderItemDao
 import com.example.restaurant.data.entity.Order
 import com.example.restaurant.data.entity.OrderItem
+import com.example.restaurant.data.entity.OrderItemWithDish
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
@@ -13,9 +15,14 @@ class OrderRepository @Inject constructor(
     private val cartRepository: CartRepository
 ) {
 
+    fun getOrderItems(orderId: Int): Flow<List<OrderItemWithDish>> {
+        return orderItemDao.getOrderItemsWithDishes(orderId)
+    }
+    
+    fun getOrder(orderId: Int): Flow<Order?> = orderDao.getOrderById(orderId)
+
     suspend fun createOrder(userId: Int, paymentMethod: String): Result<Unit> {
         return try {
-            // Исправлено: получаем текущее значение из Flow с помощью .first()
             val cartItems = cartRepository.getCart().first()
             if (cartItems.isEmpty()) {
                 return Result.failure(Exception("Корзина пуста"))

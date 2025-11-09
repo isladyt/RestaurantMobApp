@@ -1,5 +1,6 @@
 package com.example.restaurant.ui.history
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,7 +19,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.restaurant.data.entity.Order
 
 @Composable
-fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
+fun HistoryScreen(
+    viewModel: HistoryViewModel = hiltViewModel(),
+    onOrderClick: (Int) -> Unit
+) {
     val orders by viewModel.orders.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -30,17 +34,19 @@ fun HistoryScreen(viewModel: HistoryViewModel = hiltViewModel()) {
 
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(orders) { order ->
-                OrderItem(order)
+                OrderItem(order, onOrderClick)
             }
         }
     }
 }
 
 @Composable
-fun OrderItem(order: Order) {
+fun OrderItem(order: Order, onOrderClick: (Int) -> Unit) {
     Card(modifier = Modifier
         .fillMaxWidth()
-        .padding(8.dp)) {
+        .padding(8.dp)
+        .clickable { onOrderClick(order.id) } // Делаем карточку кликабельной
+    ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text("Заказ №${order.id}", style = MaterialTheme.typography.titleMedium)
             Text("Статус: ${order.status_order}")

@@ -46,7 +46,7 @@ object ExcelExporter {
                 row.createCell(2).setCellValue(dateFormat.format(Date(order.created_at)))
                 row.createCell(3).setCellValue(order.status_order)
                 row.createCell(4).setCellValue(order.payment_method)
-                row.createCell(5).setCellValue(order.total_amount)
+                row.createCell(5).setCellValue(order.total_amount.toDouble())
             }
 
             // Сохранение
@@ -94,7 +94,7 @@ object ExcelExporter {
         val pendingIntent = PendingIntent.getActivity(context, 0, openIntent, PendingIntent.FLAG_IMMUTABLE)
 
         val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-            .setSmallIcon(R.mipmap.ic_launcher) // ИСПРАВЛЕНО
+            .setSmallIcon(R.mipmap.ic_launcher)
             .setContentTitle("Отчет сохранен")
             .setContentText("Нажмите, чтобы открыть файл: ${file.name}")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

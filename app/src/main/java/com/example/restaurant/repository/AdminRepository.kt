@@ -9,7 +9,8 @@ class AdminRepository @Inject constructor(private val orderDao: OrderDao) {
 
     fun getAllOrders(): Flow<List<Order>> = orderDao.getAllOrders()
 
-    suspend fun updateOrderStatus(orderId: Int, status: String) {
-        orderDao.updateOrderStatus(orderId, status)
+    suspend fun updateOrderStatus(orderId: Int, newStatus: String) {
+        orderDao.updateOrderStatus(orderId, newStatus)
     }
+
 }

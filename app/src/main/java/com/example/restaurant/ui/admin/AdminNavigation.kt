@@ -15,6 +15,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.restaurant.ui.order.OrderDetailScreen
 
 // Определяем маршруты для админки
 const val ADMIN_ORDERS_ROUTE = "admin_orders"
@@ -59,7 +60,7 @@ fun AdminNavigation() {
             modifier = Modifier.padding(padding)
         ) {
             composable(ADMIN_ORDERS_ROUTE) {
-                AdminOrderScreen()
+                AdminOrderScreen(onOrderClick = { navController.navigate("order_detail/$it") })
             }
             composable(ADMIN_MENU_ROUTE) {
                 MenuAdminScreen(
@@ -75,6 +76,12 @@ fun AdminNavigation() {
             }
             composable(ADMIN_REPORTS_ROUTE) {
                 ReportScreen()
+            }
+            composable(
+                route = "order_detail/{orderId}",
+                arguments = listOf(navArgument("orderId") { type = NavType.IntType })
+            ) {
+                OrderDetailScreen(navController = navController)
             }
         }
     }

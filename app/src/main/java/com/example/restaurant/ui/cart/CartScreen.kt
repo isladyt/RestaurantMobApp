@@ -42,9 +42,9 @@ fun CartScreen(
                     item = item, 
                     onIncrease = { viewModel.increaseQuantity(it) },
                     onDecrease = { viewModel.decreaseQuantity(it) },
-                    onRemove = { viewModel.removeFromCart(it) } // Передаем функцию удаления
+                    onRemove = { viewModel.removeFromCart(it) }
                 )
-                Divider()
+                HorizontalDivider()
             }
         }
         Column(
@@ -66,7 +66,7 @@ fun CartItemRow(
     item: CartItem, 
     onIncrease: (Int) -> Unit,
     onDecrease: (Int) -> Unit,
-    onRemove: (Int) -> Unit // Принимаем функцию удаления
+    onRemove: (Int) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -96,7 +96,6 @@ fun CartItemRow(
         }
         Text("${item.dish.price * item.quantity} ₽", modifier = Modifier.width(80.dp))
 
-        // Добавляем кнопку удаления
         IconButton(onClick = { onRemove(item.dish.id) }) {
             Icon(Icons.Default.Delete, contentDescription = "Удалить из корзины")
         }

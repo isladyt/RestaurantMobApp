@@ -18,9 +18,12 @@ interface OrderDao {
     @Query("SELECT * FROM orders ORDER BY created_at DESC")
     fun getAllOrders(): Flow<List<Order>>
 
-    @Query("SELECT * FROM orders WHERE created_at >= :startTime")
+    @Query("SELECT * FROM orders WHERE created_at >= :startTime ORDER BY created_at DESC")
     suspend fun getTodaysOrders(startTime: Long): List<Order>
 
-    @Query("UPDATE orders SET status_order = :status WHERE id = :orderId")
-    suspend fun updateOrderStatus(orderId: Int, status: String)
+    @Query("UPDATE orders SET status_order = :newStatus WHERE id = :orderId")
+    suspend fun updateOrderStatus(orderId: Int, newStatus: String)
+
+    @Query("SELECT * FROM orders WHERE id = :orderId")
+    fun getOrderById(orderId: Int): Flow<Order?>
 }

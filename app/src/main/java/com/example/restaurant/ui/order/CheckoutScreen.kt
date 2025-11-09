@@ -1,7 +1,10 @@
 package com.example.restaurant.ui.order
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.Button
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -10,11 +13,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun CheckoutScreen(
-    viewModel: OrderViewModel = hiltViewModel(),
+    viewModel: CheckoutViewModel = hiltViewModel(),
     onOrderPlaced: () -> Unit
 ) {
-    val orderState by viewModel.orderState.collectAsState()
-    var selectedPaymentMethod by remember { mutableStateOf("Наличные") }
+    val paymentOptions = listOf("Наличными", "Картой")
+    var selectedPaymentMethod by remember { mutableStateOf(paymentOptions[0]) }
+
+    LaunchedEffect(Unit) {
+        viewModel.orderPlaced.collect {
+            onOrderPlaced()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -23,42 +32,34 @@ fun CheckoutScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("Выберите способ оплаты", style = MaterialTheme.typography.headlineSmall)
+        Text("Оформление заказа")
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row {
-            RadioButton(
-                selected = selectedPaymentMethod == "Наличные",
-                onClick = { selectedPaymentMethod = "Наличные" }
-            )
-            Text("Наличные", modifier = Modifier.align(Alignment.CenterVertically))
-            Spacer(modifier = Modifier.width(16.dp))
-            RadioButton(
-                selected = selectedPaymentMethod == "Картой",
-                onClick = { selectedPaymentMethod = "Картой" }
-            )
-            Text("Картой", modifier = Modifier.align(Alignment.CenterVertically))
+        paymentOptions.forEach { text ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected = (text == selectedPaymentMethod),
+                        onClick = { selectedPaymentMethod = text }
+                    )
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = (text == selectedPaymentMethod),
+                    onClick = { selectedPaymentMethod = text }
+                )
+                Text(
+                    text = text,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        when (val state = orderState) {
-            is OrderState.Success -> {
-                LaunchedEffect(state) {
-                    onOrderPlaced()
-                }
-            }
-            is OrderState.Error -> {
-                Text(state.message, color = MaterialTheme.colorScheme.error)
-            }
-            OrderState.Loading -> {
-                CircularProgressIndicator()
-            }
-            OrderState.Idle -> {
-                Button(onClick = { viewModel.createOrder(selectedPaymentMethod) }) {
-                    Text("Оформить заказ")
-                }
-            }
+        Spacer(modifier = Modifier.height(16.dp))
+        Button(onClick = { viewModel.placeOrder(selectedPaymentMethod) }) {
+            Text("Оплатить")
         }
     }
 }

@@ -9,8 +9,8 @@ data class Dish(
     val name: String,
     val description: String,
     val ingredients: String,
-    val price: Double,
+    val price: Int, // Меняем на Int
     val category_id: Int,
-    val image_res_id: Int? = null, // Поле для ID ресурса
+    val image_res_id: Int? = null,
     var is_favorite: Boolean = false
 )

@@ -2,6 +2,7 @@ package com.example.restaurant.ui.menu
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -37,12 +38,15 @@ fun MenuScreen(
             modifier = Modifier.padding(16.dp)
         )
 
-        TabRow(selectedTabIndex = categories.indexOfFirst { it.id == selectedCategoryId }.coerceAtLeast(0)) {
-            categories.forEach {
-                Tab(
-                    selected = it.id == selectedCategoryId,
-                    onClick = { viewModel.selectCategory(it.id) },
-                    text = { Text(it.name) }
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(categories) { category ->
+                FilterChip(
+                    selected = category.id == selectedCategoryId,
+                    onClick = { viewModel.selectCategory(category.id) },
+                    label = { Text(category.name) }
                 )
             }
         }
@@ -60,7 +64,7 @@ fun DishItem(
     dish: Dish, 
     onAddToCart: ((Dish) -> Unit)? = null,
     onSetFavorite: ((Int, Boolean) -> Unit)?,
-    modifier: Modifier = Modifier // Добавляем modifier
+    modifier: Modifier = Modifier
 ) {
     Card(modifier = modifier
         .fillMaxWidth()
