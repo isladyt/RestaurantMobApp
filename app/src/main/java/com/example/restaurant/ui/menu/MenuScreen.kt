@@ -33,7 +33,7 @@ fun MenuScreen(
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = "Ресторан Меню",
+            text = "Меню",
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(16.dp)
         )
