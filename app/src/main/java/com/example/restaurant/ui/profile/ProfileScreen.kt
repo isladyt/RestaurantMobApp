@@ -1,6 +1,5 @@
 package com.example.restaurant.ui.profile
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -9,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -18,16 +16,36 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
     onUserDeleted: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    showMessage: (String) -> Unit // Новый callback
 ) {
     val user by viewModel.user.collectAsState()
     val updateState by viewModel.updateState.collectAsState()
-    val context = LocalContext.current
     var showLogoutDialog by remember { mutableStateOf(false) }
 
     var name by remember(user) { mutableStateOf(user?.name ?: "") }
     var email by remember(user) { mutableStateOf(user?.email ?: "") }
     var phone by remember(user) { mutableStateOf(user?.phone ?: "") }
+
+    // Обрабатываем события из ViewModel
+    LaunchedEffect(updateState) {
+        when (val state = updateState) {
+            is UpdateState.Success -> {
+                showMessage(state.message)
+                viewModel.consumedUpdateState()
+            }
+            is UpdateState.Error -> {
+                showMessage(state.message)
+                viewModel.consumedUpdateState()
+            }
+            is UpdateState.UserDeleted -> {
+                showMessage("Профиль успешно удален")
+                onUserDeleted()
+                viewModel.consumedUpdateState()
+            }
+            else -> {}
+        }
+    }
 
     if (showLogoutDialog) {
         AlertDialog(
@@ -45,22 +63,6 @@ fun ProfileScreen(
                 }
             }
         )
-    }
-
-    LaunchedEffect(updateState) {
-        when (val state = updateState) {
-            is UpdateState.Success -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
-            }
-            is UpdateState.Error -> {
-                Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
-            }
-            is UpdateState.UserDeleted -> {
-                Toast.makeText(context, "Профиль успешно удален", Toast.LENGTH_SHORT).show()
-                onUserDeleted()
-            }
-            else -> {}
-        }
     }
 
     Column(

@@ -24,18 +24,11 @@ fun AppNavigation(mainViewModel: MainViewModel = hiltViewModel()) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
+    // Централизованный обработчик сообщений
     LaunchedEffect(Unit) {
-        mainViewModel.showAddedToCartMessage.collect { dishName ->
+        mainViewModel.userMessage.collect { message ->
             scope.launch {
-                snackbarHostState.showSnackbar("Блюдо '$dishName' добавлено в корзину")
-            }
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        mainViewModel.showOrderPlacedMessage.collect {
-            scope.launch {
-                snackbarHostState.showSnackbar("Спасибо за заказ!")
+                snackbarHostState.showSnackbar(message)
             }
         }
     }
@@ -46,7 +39,7 @@ fun AppNavigation(mainViewModel: MainViewModel = hiltViewModel()) {
         }
         is ScreenState.Main -> {
             if (state.user.is_admin) {
-                AdminNavigation(onLogout = { mainViewModel.onLogout() }) // Передаем onLogout
+                AdminNavigation(onLogout = { mainViewModel.onLogout() })
             } else {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()

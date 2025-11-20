@@ -20,6 +20,11 @@ fun LoginScreen(
 
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }
+
+    fun validate(): Boolean {
+        return login.isNotBlank() && password.isNotBlank()
+    }
 
     Column(
         modifier = Modifier
@@ -33,15 +38,17 @@ fun LoginScreen(
 
         OutlinedTextField(
             value = login,
-            onValueChange = { login = it },
+            onValueChange = { login = it; showError = false },
             label = { Text("Логин") },
+            isError = showError && login.isBlank(),
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { password = it; showError = false },
             label = { Text("Пароль") },
+            isError = showError && password.isBlank(),
             visualTransformation = PasswordVisualTransformation(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -58,29 +65,28 @@ fun LoginScreen(
                     }
                 }
                 is LoginState.Error -> {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(state.message, color = MaterialTheme.colorScheme.error)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Button(onClick = { viewModel.login(login, password) }) {
-                            Text("Войти")
-                        }
-                    }
+                    Text(state.message, color = MaterialTheme.colorScheme.error)
                 }
                 is LoginState.Loading -> {
                     CircularProgressIndicator()
                 }
-                is LoginState.Idle, is LoginState.RegistrationSuccess -> {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        if (state is LoginState.RegistrationSuccess) {
-                            Text("Регистрация прошла успешно!", color = MaterialTheme.colorScheme.secondary)
-                            Spacer(modifier = Modifier.height(8.dp))
-                        }
-                        Button(onClick = { viewModel.login(login, password) }) {
-                            Text("Войти")
-                        }
-                    }
-                }
+                is LoginState.Idle, is LoginState.RegistrationSuccess -> { /* Do nothing */ }
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = { 
+                if (validate()) {
+                    viewModel.login(login, password)
+                } else {
+                    showError = true
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Войти")
         }
 
         Spacer(modifier = Modifier.height(16.dp))

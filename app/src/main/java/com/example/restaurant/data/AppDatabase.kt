@@ -11,12 +11,10 @@ import com.example.restaurant.data.entity.Category
 import com.example.restaurant.data.entity.Dish
 import com.example.restaurant.data.entity.Order
 import com.example.restaurant.data.entity.OrderItem
-import com.example.restaurant.data.entity.OrderItemWithDish
 import com.example.restaurant.data.entity.User
 
 @Database(
     entities = [User::class, Category::class, Dish::class, Order::class, OrderItem::class],
-    views = [OrderItemWithDish::class],
     version = 20, // Увеличиваем версию
     exportSchema = false
 )

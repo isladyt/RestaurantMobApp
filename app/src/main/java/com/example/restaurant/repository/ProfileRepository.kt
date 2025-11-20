@@ -4,27 +4,27 @@ import com.example.restaurant.data.dao.UserDao
 import com.example.restaurant.data.entity.User
 import javax.inject.Inject
 
-class ProfileRepository @Inject constructor(private val userDao: UserDao) {
+class ProfileRepository @Inject constructor(
+    private val userDao: UserDao,
+    private val authRepository: AuthRepository // Добавляем зависимость
+) {
+
+    // Получаем текущего пользователя из AuthRepository
+    suspend fun getCurrentUser(): User? {
+        return authRepository.getCurrentUser()
+    }
 
     suspend fun updateUser(user: User): Result<Unit> {
         return try {
-            userDao.updateUser(user)
+            userDao.insert(user)
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun deleteUser(userId: Int): Result<Unit> {
-        return try {
-            userDao.deleteUser(userId)
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
-
-    suspend fun getUser(login: String): User? {
-        return userDao.findByLogin(login)
+    // Исправляем метод, чтобы он принимал User, но передавал ID в DAO
+    suspend fun deleteUser(user: User) {
+        userDao.deleteUser(user.id) // ИСПРАВЛЕНО
     }
 }

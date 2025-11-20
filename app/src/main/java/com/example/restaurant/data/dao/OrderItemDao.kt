@@ -13,6 +13,15 @@ interface OrderItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrderItem(orderItem: OrderItem)
 
-    @Query("SELECT * FROM OrderItemWithDish WHERE order_id = :orderId")
+    // ИСПРАВЛЕНО: Используем прямой JOIN-запрос
+    @Query("""
+        SELECT 
+            order_items.*, 
+            dishes.name AS dish_name, 
+            dishes.image_res_id AS dish_image_res_id
+        FROM order_items 
+        INNER JOIN dishes ON order_items.dish_id = dishes.id 
+        WHERE order_items.order_id = :orderId
+    """)
     fun getOrderItemsWithDishes(orderId: Int): Flow<List<OrderItemWithDish>>
 }

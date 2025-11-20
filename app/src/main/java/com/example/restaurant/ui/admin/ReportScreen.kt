@@ -2,7 +2,6 @@ package com.example.restaurant.ui.admin
 
 import android.Manifest
 import android.os.Build
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -11,7 +10,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,9 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.restaurant.ui.MainViewModel
 
 @Composable
-fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
+fun ReportScreen(
+    viewModel: ReportViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel()
+) {
     val reportState by viewModel.reportState.collectAsState()
     val context = LocalContext.current
 
@@ -30,8 +32,9 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
     ) { isGranted: Boolean ->
         if (isGranted) {
             viewModel.exportReport(context)
+            mainViewModel.postMessage("Отчет успешно сохранен в папку Загрузки")
         } else {
-            Toast.makeText(context, "Разрешение на запись не предоставлено", Toast.LENGTH_SHORT).show()
+            mainViewModel.postMessage("Разрешение на запись не предоставлено")
         }
     }
 
@@ -43,15 +46,10 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                 storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
             } else {
                 viewModel.exportReport(context)
+                mainViewModel.postMessage("Отчет успешно сохранен в папку Загрузки")
             }
         } else {
-            Toast.makeText(context, "Разрешение на показ уведомлений не предоставлено", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            mainViewModel.postMessage("Разрешение на показ уведомлений не предоставлено")
         }
     }
 
@@ -81,10 +79,13 @@ fun ReportScreen(viewModel: ReportViewModel = hiltViewModel()) {
                         }
                         Spacer(modifier = Modifier.width(16.dp))
                         Button(onClick = {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                viewModel.exportReport(context)
-                            } else {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
                                 storagePermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            } else {
+                                viewModel.exportReport(context)
+                                mainViewModel.postMessage("Отчет успешно сохранен в папку Загрузки")
                             }
                         }) {
                             Text("Экспорт в Excel")

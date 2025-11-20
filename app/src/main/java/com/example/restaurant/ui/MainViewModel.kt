@@ -24,11 +24,9 @@ class MainViewModel @Inject constructor(private val cartRepository: CartReposito
     private val _screenState = MutableStateFlow<ScreenState>(ScreenState.Auth)
     val screenState: StateFlow<ScreenState> = _screenState
 
-    private val _showAddedToCartMessage = MutableSharedFlow<String>()
-    val showAddedToCartMessage = _showAddedToCartMessage.asSharedFlow()
-
-    private val _showOrderPlacedMessage = MutableSharedFlow<Unit>()
-    val showOrderPlacedMessage = _showOrderPlacedMessage.asSharedFlow()
+    // Поток для всех пользовательских сообщений
+    private val _userMessage = MutableSharedFlow<String>()
+    val userMessage = _userMessage.asSharedFlow()
 
     fun onLoginSuccess(user: User) {
         _screenState.value = ScreenState.Main(user)
@@ -42,13 +40,19 @@ class MainViewModel @Inject constructor(private val cartRepository: CartReposito
     fun onAddToCart(dish: Dish) {
         cartRepository.addToCart(dish)
         viewModelScope.launch {
-            _showAddedToCartMessage.emit(dish.name)
+            _userMessage.emit("Блюдо '${dish.name}' добавлено в корзину")
         }
     }
 
     fun onOrderPlaced() {
         viewModelScope.launch {
-            _showOrderPlacedMessage.emit(Unit)
+            _userMessage.emit("Спасибо за заказ!")
+        }
+    }
+    
+    fun postMessage(message: String) {
+        viewModelScope.launch {
+            _userMessage.emit(message)
         }
     }
 }
